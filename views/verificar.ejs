@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de correo</title>
+</head>
+
+<body>
+    <h1>Verificando tu correo...</h1>
+    <p>Por favor espera un momento.</p>
+    <script>
+        // Simulamos la redirección al backend para la verificación
+        fetch('http://localhost:3000/api/v1/users/auth/confirm', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer <%= token %>'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert("Verificación exitosa");
+                    // Redirigir a otra página o mostrar mensaje de éxito
+                    window.location.href = 'https://google.com.ar'
+                } else {
+                    console.log(data)
+                    alert("Error en la verificación");
+                    window.location.href = 'https://google.com.ar'
+                }
+            })
+            .catch(err => console.error(err));
+    </script>
+</body>
+
+</html>
