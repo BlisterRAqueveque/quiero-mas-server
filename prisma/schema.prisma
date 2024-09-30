@@ -14,17 +14,127 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  last_name String
-  username  String    @unique
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
-  available Boolean   @default(true)
-  verified  Boolean   @default(false)
+  id          String     @id @default(uuid())
+  name        String
+  last_name   String
+  username    String     @unique
+  email       String     @unique
+  password    String
+  role        Roles       @default(USER)
+  auctions    Auction[]     // Un usuario puede tener varias subastas
+  properties  Property[]   // Un usuario puede publicar varias propiedades
+  bids        Bid[]       // Un usuario puede hacer varias pujas(ofertas en un lote)
+  wonLots     Lot[]      @relation("UserWonLots") // Relación con los lotes que ganó el usuario
+  createdAt   DateTime   @default(now())
+  deletedAt   DateTime?   //Usamos deletedAt para manejar posteriormente soft delete de un usuario
+  available   Boolean    @default(true)
+  verified    Boolean    @default(false)
 
   // Queries mas rápidas por el index
   @@index([available])
+}
+
+model Auction {
+  id          String    @id @default(uuid())
+  organizerId String    // Llave foránea a User (subastador)
+  organizer   User      @relation(fields: [organizerId], references: [id])
+  description String
+  contact     String
+  address     String
+  auctionDate DateTime   // Fecha de la subasta
+  startTime   DateTime   // Hora de inicio
+  endTime     DateTime   // Hora de fin
+  photo       String     // Foto de portada de subasta
+  lots        Lot[]      // Una subasta tiene múltiples lotes
+  createdAt   DateTime   @default(now())
+  deletedAt   DateTime?
+  available   Boolean    @default(true)
+}
+
+model Lot {
+  id              String      @id @default(uuid())
+  auctionId       String      // Llave foránea a Auction
+  auction         Auction     @relation(fields: [auctionId], references: [id])
+  description     String
+  startingPrice   Float       // Precio inicial de la puja
+  exhibitionPlace String
+  exhibitionTime  DateTime
+  bids            Bid[]       // Varias pujas por lote
+  winnerId        String?     // Usuario ganador, es opcional porque puede que ningun usuario oferte y no haya ganador
+  winner          User?       @relation("UserWonLots",fields: [winnerId], references: [id])
+  photos          String[]    // Fotos del lote
+  videos          String[]    // Videos del lote
+  createdAt       DateTime    @default(now())
+  deletedAt       DateTime?
+}
+
+model Bid {
+  id        String    @id @default(uuid())
+  userId    String    // Llave foránea a User
+  user      User      @relation(fields: [userId], references: [id])
+  lotId     String    // Llave foránea a Lot
+  lot       Lot       @relation(fields: [lotId], references: [id])
+  amount    Float     // Monto de la puja
+  createdAt DateTime  @default(now())
+  //TODO como manejar si un usuario hace una puja y luego se arrepiente
+}
+
+model Property {
+  id                String        @id @default(uuid())
+  address           String
+  price             Int
+  description       String
+  services          String?
+  amenities         String?
+  floors            String?
+  constructed_area  Float?
+  unbuilt_surface   Float?
+  total_suface      Float?
+  years             Int?
+  contact           String
+  userId            String        // Llave foránea a User
+  user              User          @relation(fields: [userId], references: [id])
+  propertyType      PropertyType
+  operation         Operation
+  rooms             Int?
+  bedrooms          Int?
+  bathrooms         Int?
+  area              Float?        // Área en metros cuadrados
+  photos            String[]      
+  videos            String[]      
+  available         Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  deletedAt         DateTime?
+}
+
+enum Roles {
+  USER
+  ADMIN
+  SUPERUSER
+  AUCTIONEER
+}
+
+enum Operation {
+  VENTA
+  ALQUILER
+  VENTA_ALQUILER
+}
+
+enum PropertyType {
+  DEPOSITOS
+  PARQUES_INDUSTRIALES
+  TERRENOS_INDUSTRIALES
+  OFICINAS
+  LOCALES
+  FONDOS_DE_COMERCIO
+  CAMPOS
+  UNIDADES_EN_POZO
+  TERRENOS
+  CASA
+  DEPARTAMENTO
+  PH
+  MONOAMBIENTE
+  DUPLEX
+  TRIPLEX
+  OTRO
 }

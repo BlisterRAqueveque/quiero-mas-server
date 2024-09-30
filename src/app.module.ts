@@ -9,6 +9,10 @@ import { UsersModule } from './users';
 import { MulterModule } from '@nestjs/platform-express';
 import { saveImagesToStorage } from './helpers/image.storage';
 import { AppController } from './app.controller';
+import { PropertyModule } from './property/property.module';
+import { AuctionModule } from './auction/auction.module';
+import { LotModule } from './lot/lot.module';
+import { BidModule } from './bid/bid.module';
 
 @Module({
   imports: [
@@ -22,6 +26,10 @@ import { AppController } from './app.controller';
       fileFilter: saveImagesToStorage('main').fileFilter,
       storage: saveImagesToStorage('main').storage,
     }),
+    PropertyModule,
+    AuctionModule,
+    LotModule,
+    BidModule,
   ],
   controllers: [AppController],
   providers: [],

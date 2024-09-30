@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import * as dotenv from 'dotenv';
 import * as joi from 'joi';
 
 interface EnvVars {
@@ -8,7 +9,7 @@ interface EnvVars {
   MAIL_PORT: number;
   MAIL_HOST: string;
 }
-
+console.log(process.env);
 const envsSchema = joi
   .object({
     PORT: joi.number().required(),
