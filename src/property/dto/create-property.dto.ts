@@ -65,10 +65,6 @@ export class CreatePropertyDto {
   @IsOptional()
   bathrooms?: number;
 
-  @IsNumber()
-  @IsOptional()
-  area?: number;
-
   @IsArray()
   @IsOptional()
   photos?: string[];

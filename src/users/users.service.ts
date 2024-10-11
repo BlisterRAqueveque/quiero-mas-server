@@ -1,20 +1,12 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  OnModuleInit,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { AuthService } from '../auth';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { PrismaClient           } from '@prisma/client';
+import { AuthService            } from '../auth';
 import { OrderBy, PaginationDto } from '../common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { MAIL_SERVICE } from 'src/configuration';
-import { ClientProxy } from '@nestjs/microservices';
+import { CreateUserDto          } from './dto/create-user.dto';
+import { LoginDto               } from './dto/login.dto';
+import { UpdateUserDto          } from './dto/update-user.dto';
+import { MAIL_SERVICE           } from '../configuration';
+import { ClientProxy            } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService extends PrismaClient implements OnModuleInit {

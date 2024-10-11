@@ -20,7 +20,7 @@ export class AuthService {
      *              Destructuring the token, gets the information.
      */
     const payload: PayloadDto = {
-      sub: user.id,
+      id: user.id,
       username: user.username,
       name: user.name,
       last_name: user.last_name,

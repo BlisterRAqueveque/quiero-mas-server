@@ -1,5 +1,5 @@
 export class PayloadDto {
-  sub: string;
+  id: string;
   username: string;
   name: string;
   last_name: string;

@@ -1,24 +1,11 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Headers,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Res,
-} from '@nestjs/common';
-import { AuthService } from 'src/auth';
-import { PaginationDto } from '../common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
-import { Response } from 'express';
+import { BadRequestException, Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query, Res, } from '@nestjs/common';
+import { AuthService    } from '../auth';
+import { PaginationDto  } from '../common';
+import { CreateUserDto  } from './dto/create-user.dto';
+import { LoginDto       } from './dto/login.dto';
+import { UpdateUserDto  } from './dto/update-user.dto';
+import { UsersService   } from './users.service';
+import { Response       } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -67,11 +54,11 @@ export class UsersController {
     if (isToken) {
       const decoded = await this.auth.verifyJwt(split);
 
-      const user = await this.usersService.findOne(decoded.sub);
+      const user = await this.usersService.findOne(decoded.id);
 
       if (user.verified) throw new BadRequestException('User already verified');
 
-      const result = await this.usersService.update(decoded.sub, {
+      const result = await this.usersService.update(decoded.id, {
         verified: true,
         id: '',
       });

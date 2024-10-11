@@ -99,7 +99,6 @@ model Property {
   rooms             Int?
   bedrooms          Int?
   bathrooms         Int?
-  area              Float?        // Área en metros cuadrados
   photos            String[]      
   videos            String[]      
   available         Boolean       @default(true)
