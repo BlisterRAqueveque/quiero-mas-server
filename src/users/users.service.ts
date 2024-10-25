@@ -1,34 +1,36 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
-import { PrismaClient           } from '@prisma/client';
-import { AuthService            } from '../auth';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+import { AuthService } from '../auth';
 import { OrderBy, PaginationDto } from '../common';
-import { CreateUserDto          } from './dto/create-user.dto';
-import { LoginDto               } from './dto/login.dto';
-import { UpdateUserDto          } from './dto/update-user.dto';
-import { MAIL_SERVICE           } from '../configuration';
-import { ClientProxy            } from '@nestjs/microservices';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { MAIL_SERVICE } from '../configuration';
+import { ClientProxy } from '@nestjs/microservices';
+import { PrismaService } from 'src/prisma-setup/prisma.service';
 
 @Injectable()
-export class UsersService extends PrismaClient implements OnModuleInit {
-  private readonly logger = new Logger('User Module');
-  async onModuleInit() {
-    await this.$connect();
-    this.logger.log('Database connected');
-  }
-
+export class UsersService {
   constructor(
     private readonly auth: AuthService,
+    private readonly prisma: PrismaService,
     @Inject(MAIL_SERVICE) private readonly mailClient: ClientProxy,
-  ) {
-    super();
-  }
+  ) {}
 
   /**
    * @description
    * Auth login fx
    */
   async login(login: LoginDto) {
-    const user = await this.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: { username: login.username, available: true },
     });
 
@@ -46,10 +48,10 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     return token;
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async register(createUserDto: CreateUserDto) {
     try {
       const hashPassword = await this.auth.hashPassword(createUserDto.password);
-      const result = await this.user.create({
+      const result = await this.prisma.user.create({
         data: { ...createUserDto, password: hashPassword },
       });
 
@@ -64,12 +66,12 @@ export class UsersService extends PrismaClient implements OnModuleInit {
   async findAll(pagination: PaginationDto) {
     const { page, limit, orderBy } = pagination;
 
-    const totalPages = await this.user.count();
+    const totalPages = await this.prisma.user.count();
 
     const lastPage = Math.ceil(totalPages / limit);
 
     const result = {
-      data: await this.user.findMany({
+      data: await this.prisma.user.findMany({
         where: { available: true },
         skip: (page - 1) * limit,
         take: limit,
@@ -92,7 +94,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
   }
 
   async findOne(id: string) {
-    const result = await this.user.findFirst({
+    const result = await this.prisma.user.findFirst({
       where: { id, available: true },
     });
 
@@ -106,14 +108,14 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
     await this.findOne(id);
 
-    const result = await this.user.update({ where: { id }, data });
+    const result = await this.prisma.user.update({ where: { id }, data });
 
     return result;
   }
 
   async remove(id: string) {
     await this.findOne(id);
-    const result = await this.user.update({
+    const result = await this.prisma.user.update({
       where: { id },
       data: { available: false, deletedAt: new Date() },
     });

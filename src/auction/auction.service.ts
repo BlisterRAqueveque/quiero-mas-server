@@ -1,10 +1,10 @@
-import { Injectable       } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
-import { PrismaService    } from '../prisma-setup/prisma.service';
+import { PrismaService } from '../prisma-setup/prisma.service';
 
 @Injectable()
-export class AuctionService{
+export class AuctionService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Crear una nueva subasta
@@ -23,7 +23,7 @@ export class AuctionService{
     return this.prisma.auction.findMany({
       skip,
       take,
-      where:   { available: true }, // Solo subastas activas
+      where: { available: true }, // Solo subastas activas
       include: { organizer: true, lots: true }, // Incluimos las relaciones necesarias
       orderBy: { auctionDate: 'desc' },
     });
@@ -32,7 +32,7 @@ export class AuctionService{
   // Obtener una subasta por su ID
   async findOne(id: string) {
     return this.prisma.auction.findUnique({
-      where:   { id },
+      where: { id },
       include: { organizer: true, lots: true },
     });
   }
@@ -49,7 +49,7 @@ export class AuctionService{
   async remove(id: string) {
     return this.prisma.auction.update({
       where: { id },
-      data:  {
+      data: {
         available: false,
         deletedAt: new Date(),
       },

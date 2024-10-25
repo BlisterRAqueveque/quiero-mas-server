@@ -36,7 +36,7 @@ import { BidModule } from './bid/bid.module';
 })
 export class AppModule implements NestModule {
   //! Apply the middleware for all the routes
-  configure(consumer: MiddlewareConsumer,) {
+  configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
       .exclude(
@@ -51,7 +51,7 @@ export class AppModule implements NestModule {
         },
         {
           path: '/auth/verificar',
-          method: RequestMethod.GET,  
+          method: RequestMethod.GET,
         },
       )
       .forRoutes('');

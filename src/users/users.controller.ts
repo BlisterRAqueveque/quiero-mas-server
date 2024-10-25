@@ -1,11 +1,24 @@
-import { BadRequestException, Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query, Res, } from '@nestjs/common';
-import { AuthService    } from '../auth';
-import { PaginationDto  } from '../common';
-import { CreateUserDto  } from './dto/create-user.dto';
-import { LoginDto       } from './dto/login.dto';
-import { UpdateUserDto  } from './dto/update-user.dto';
-import { UsersService   } from './users.service';
-import { Response       } from 'express';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
+import { AuthService } from '../auth';
+import { PaginationDto } from '../common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -20,8 +33,8 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  register(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.register(createUserDto);
   }
 
   @Get()

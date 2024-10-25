@@ -1,12 +1,11 @@
-import { Module             } from '@nestjs/common';
-import { AuctionService     } from './auction.service';
-import { AuctionController  } from './auction.controller';
-import { AuthModule         } from '../auth/auth.module';
-
+import { Module } from '@nestjs/common';
+import { AuctionService } from './auction.service';
+import { AuctionController } from './auction.controller';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports:     [AuthModule],
+  imports: [AuthModule],
   controllers: [AuctionController],
-  providers:   [AuctionService],
+  providers: [AuctionService],
 })
 export class AuctionModule {}

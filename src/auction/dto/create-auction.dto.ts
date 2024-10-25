@@ -42,6 +42,4 @@ export class CreateAuctionDto {
   @Type(() => Date)
   @IsOptional()
   deletedAt?: Date;
-
 }
-

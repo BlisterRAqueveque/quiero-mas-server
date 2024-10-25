@@ -9,4 +9,3 @@ export * from './enums/operation.enum';
 export * from './enums/property.enum';
 
 export * from './enums/roles.enum';
-

@@ -1,9 +1,19 @@
-import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, } from '@nestjs/common';
-import { AuctionService   } from './auction.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { AuctionService } from './auction.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
-import { Auth             } from '../auth/decorators';
-
+import { Auth } from '../auth/decorators';
 
 @Controller('auction')
 export class AuctionController {
@@ -11,7 +21,7 @@ export class AuctionController {
 
   /* Todos los usuarios autenticados podrán crear subastas */
   /* TODO: restringir creación de subastas para usuarios, los usuarios comunes podrán crear subastas pero no de cualquier tipo ( Preguntar a Caro como manejar esto) */
-@Auth()
+  @Auth()
   @Post()
   async create(@Body() createAuctionDto: CreateAuctionDto) {
     try {
@@ -41,9 +51,12 @@ export class AuctionController {
     return auction;
   }
 
-  /* TODO: El usuario que creó la subasta podrá actualizarla */ 
+  /* TODO: El usuario que creó la subasta podrá actualizarla */
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateAuctionDto: UpdateAuctionDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateAuctionDto: UpdateAuctionDto,
+  ) {
     try {
       return await this.auctionService.update(id, updateAuctionDto);
     } catch (error) {

@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsArray, IsDate, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  IsDate,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateLotDto {

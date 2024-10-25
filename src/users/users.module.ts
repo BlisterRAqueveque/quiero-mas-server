@@ -1,9 +1,10 @@
-import { forwardRef, Module       } from '@nestjs/common';
-import { AuthModule               } from '../auth';
-import { UsersController          } from './users.controller';
-import { UsersService             } from './users.service';
+import { forwardRef, Module } from '@nestjs/common';
+import { AuthModule } from '../auth';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { envs, MAIL_SERVICE       } from '../configuration';
+import { envs, MAIL_SERVICE } from '../configuration';
+import { PrismaModule } from 'src/prisma-setup/prisma.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { envs, MAIL_SERVICE       } from '../configuration';
         },
       },
     ]),
+    PrismaModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

@@ -1,4 +1,12 @@
-import { IsString, IsEnum, IsOptional, IsBoolean, IsNumber, IsArray, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  IsArray,
+  IsDate,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { PropertyType } from '../../common/enums/property.enum';
 import { Operation } from '../../common/enums/operation.enum';
@@ -87,4 +95,3 @@ export class CreatePropertyDto {
   @IsOptional()
   deletedAt?: Date;
 }
-

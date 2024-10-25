@@ -1,7 +1,12 @@
-import { HttpException, HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
-import { NextFunction, Response                                } from 'express';
-import { UpdateUserDto, UsersService                           } from '../../users';
-import { AuthService                                           } from '../auth.service';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NestMiddleware,
+} from '@nestjs/common';
+import { NextFunction, Response } from 'express';
+import { UpdateUserDto, UsersService } from '../../users';
+import { AuthService } from '../auth.service';
 
 export interface RequestModel {
   user: UpdateUserDto;
@@ -24,9 +29,7 @@ export class AuthMiddleware implements NestMiddleware {
       const tokenArray: string[] = req.headers['authorization'].split(' ');
       const decodedToken = await this.authService.verifyJwt(tokenArray[1]);
 
-      let user: UpdateUserDto = await this.userService.findOne(
-        decodedToken.id,
-      );
+      let user: UpdateUserDto = await this.userService.findOne(decodedToken.id);
 
       if (decodedToken) {
         if (user.id == decodedToken.id) next();
