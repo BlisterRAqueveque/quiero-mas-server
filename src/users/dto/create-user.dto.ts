@@ -42,9 +42,10 @@ export class CreateUserDto {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  deletedAt: Date;    //Agregado para hacer soft delete de usuario  
+  deletedAt?: Date;    //Agregado para hacer soft delete de usuario  
   
   @IsBoolean()
   @IsOptional()
-  verified: boolean;
+  verified?: boolean;
 }
+
