@@ -2,8 +2,6 @@ import { Type } from 'class-transformer';
 import { IsString, IsBoolean, IsOptional, IsDate } from 'class-validator';
 
 export class CreateAuctionDto {
-  @IsString()
-  organizerId: string;
 
   @IsString()
   description: string;

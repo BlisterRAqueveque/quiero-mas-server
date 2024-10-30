@@ -8,10 +8,11 @@ export class AuctionService{
   constructor(private readonly prisma: PrismaService) {}
 
   // Crear una nueva subasta
-  async create(createAuctionDto: CreateAuctionDto) {
+  async create(createAuctionDto: CreateAuctionDto, organizerId:string) {
     return this.prisma.auction.create({
       data: {
         ...createAuctionDto,
+        organizerId, /* usamos el organizerId proporcionado desde el controlador */
         createdAt: createAuctionDto.createdAt || new Date(),
       },
     });
