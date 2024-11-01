@@ -1,8 +1,9 @@
-import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, UseGuards, Request, } from '@nestjs/common';
+import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { AuctionService   } from './auction.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
 import { Auth, GetUser    } from '../auth/decorators';
+import { State            } from '../common/enums/state.enum';
 
 
 @Controller('auction')
@@ -11,36 +12,34 @@ export class AuctionController {
 
   /* Todos los usuarios autenticados podrán crear subastas */
   /* TODO: restringir creación de subastas para usuarios, los usuarios comunes podrán crear subastas pero no de cualquier tipo ( Preguntar a Caro como manejar esto) */
-@Auth()
+  @Auth()
   @Post()
-  async create(@Body() createAuctionDto: CreateAuctionDto, @Request() req){
+  async create(@Body() createAuctionDto: CreateAuctionDto, @GetUser('id') organizerId: string) {  /* Extraermos el id del usuario desde el decorador @GetUser, así simplificamos la lógica */
     try {
-      const organizerId = req.user.id; // Extrae el organizerId desde Auth
       return await this.auctionService.create(createAuctionDto, organizerId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  // Obtener todas las subastas con paginación
+
+  /* Obtener todas las subastas según su estado, si no es proporcionado el estado devolvemos todas las Auctions. Tambien implementamos paginación */ 
   @Get()
-  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    limit = Math.min(limit, 100); // Evitar que alguien solicite demasiados elementos
-    return this.auctionService.findAll({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('state') state?: State,
+  ) {
+    return this.auctionService.findAll(page, limit, state); /* Llama al servicio para obtener las subastas con la lógica de paginación y filtrado por estado */
   }
 
-  // Obtener una subasta por su ID
+
+  /* Obtener una subasta por su ID */ 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const auction = await this.auctionService.findOne(id);
-    if (!auction) {
-      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
-    }
-    return auction;
+    return await this.auctionService.findOne(id);
   }
+
 
   /* TODO: El usuario que creó la subasta podrá actualizarla */ 
   @Patch(':id')
@@ -62,3 +61,4 @@ export class AuctionController {
     }
   }
 }
+
