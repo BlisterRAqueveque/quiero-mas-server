@@ -48,6 +48,7 @@ model Auction {
   lots        Lot[]      // Una subasta tiene múltiples lotes
   createdAt   DateTime   @default(now())
   deletedAt   DateTime?
+  available   Boolean    @default(true)
   state       State      @default(AVAILABLE) 
 }
 

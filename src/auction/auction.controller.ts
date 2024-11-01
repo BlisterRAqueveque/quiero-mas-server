@@ -1,9 +1,12 @@
-import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
+import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, NotFoundException, UseGuards } from '@nestjs/common';
 import { AuctionService   } from './auction.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
-import { Auth, GetUser    } from '../auth/decorators';
+import { Auth, GetUser, RoleProtected    } from '../auth/decorators';
 import { State            } from '../common/enums/state.enum';
+import { ParseUUIDPipe    } from '@nestjs/common';
+import { Roles } from 'src/common';
+import { UserRoleGuard } from 'src/auth/guards/user-role.guard';
 
 
 @Controller('auction')
@@ -36,29 +39,37 @@ export class AuctionController {
 
   /* Obtener una subasta por su ID */ 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.auctionService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    const auction = await this.auctionService.findOne(id);
+    return auction;
   }
 
 
   /* TODO: El usuario que creó la subasta podrá actualizarla */ 
+  @Auth()
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateAuctionDto: UpdateAuctionDto) {
-    try {
-      return await this.auctionService.update(id, updateAuctionDto);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+  @RoleProtected(Roles.SUPERUSER)
+  @UseGuards(UserRoleGuard)
+  async update(
+    @Param('id', new ParseUUIDPipe()) id: string, 
+    @Body() updateAuctionDto: UpdateAuctionDto,
+    @GetUser('id') userId: string,
+    @GetUser('role') userRole: Roles) {
+    return await this.auctionService.update(id, updateAuctionDto, userId, userRole)
   }
 
-  /* TODO: El usuario que creó la subasta podrá eliminarla, tambien el Superusuario y el Admin */
+  /* TODO: El usuario que creó la subasta podrá eliminarla, también el Superusuario y el Admin */
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    try {
-      return await this.auctionService.remove(id);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+  @Auth()
+  @RoleProtected(Roles.AUCTIONEER, Roles.SUPERUSER)
+  @UseGuards(UserRoleGuard)
+  async remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @GetUser('id') userId: string,
+    @GetUser('role') userRole: Roles){
+   
+    return await this.auctionService.remove(id, userId, userRole);
   }
+  
 }
 

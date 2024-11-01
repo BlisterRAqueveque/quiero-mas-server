@@ -3,6 +3,7 @@ import { IsString, IsOptional, IsDate, IsEnum } from 'class-validator';
 import { State } from '../../common/enums/state.enum';
 
 export class CreateAuctionDto {
+  
 
   @IsString()
   description: string;
