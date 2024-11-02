@@ -37,6 +37,8 @@ export class UsersController {
     return this.usersService.register(createUserDto);
   }
 
+  
+
   @Get()
   findAll(@Query() pagination: PaginationDto) {
     return this.usersService.findAll(pagination);

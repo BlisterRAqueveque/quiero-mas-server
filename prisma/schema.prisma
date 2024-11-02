@@ -14,21 +14,21 @@ datasource db {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  name       String
-  last_name  String
-  username   String     @unique
-  email      String     @unique
-  password   String
-  role       Roles      @default(USER)
-  auctions   Auction[] // Un usuario puede tener varias subastas
-  properties Property[] // Un usuario puede publicar varias propiedades
-  bids       Bid[] // Un usuario puede hacer varias pujas(ofertas en un lote)
-  wonLots    Lot[]      @relation("UserWonLots") // Relación con los lotes que ganó el usuario
-  createdAt  DateTime   @default(now())
-  deletedAt  DateTime? //Usamos deletedAt para manejar posteriormente soft delete de un usuario
-  available  Boolean    @default(true)
-  verified   Boolean    @default(false)
+  id          String     @id @default(uuid())
+  name        String
+  last_name   String
+  username    String     
+  email       String     @unique
+  password    String
+  role        Roles       @default(USER)
+  auctions    Auction[]     // Un usuario puede tener varias subastas
+  properties  Property[]   // Un usuario puede publicar varias propiedades
+  bids        Bid[]       // Un usuario puede hacer varias pujas(ofertas en un lote)
+  wonLots     Lot[]      @relation("UserWonLots") // Relación con los lotes que ganó el usuario
+  createdAt   DateTime   @default(now())
+  deletedAt   DateTime?   //Usamos deletedAt para manejar posteriormente soft delete de un usuario
+  available   Boolean    @default(true)
+  verified    Boolean    @default(false)
 
   // Queries mas rápidas por el index
   @@index([available])
@@ -48,7 +48,8 @@ model Auction {
   lots        Lot[] // Una subasta tiene múltiples lotes
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
-  available   Boolean   @default(true)
+  available   Boolean    @default(true)
+  state       State      @default(AVAILABLE) 
 }
 
 model Lot {
@@ -66,6 +67,7 @@ model Lot {
   videos          String[] // Videos del lote
   createdAt       DateTime  @default(now())
   deletedAt       DateTime?
+  available       Boolean    @default(true)
 }
 
 model Bid {
@@ -136,4 +138,10 @@ enum PropertyType {
   DUPLEX
   TRIPLEX
   OTRO
+}
+
+enum State {
+  AVAILABLE
+  WAITING
+  CLOSED
 }

@@ -1,34 +1,23 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  OnModuleInit,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { AuthService } from '../auth';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, Logger, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { AuthService            } from '../auth';
 import { OrderBy, PaginationDto } from '../common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { MAIL_SERVICE } from '../configuration';
-import { ClientProxy } from '@nestjs/microservices';
-import { PrismaService } from 'src/prisma-setup/prisma.service';
+import { CreateUserDto          } from './dto/create-user.dto';
+import { LoginDto               } from './dto/login.dto';
+import { UpdateUserDto          } from './dto/update-user.dto';
+import { MAIL_SERVICE           } from '../configuration';
+import { ClientProxy            } from '@nestjs/microservices';
+import { PrismaService          } from '../prisma-setup/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
-export class UsersService {
-  constructor(
-    private readonly auth: AuthService,
-    private readonly prisma: PrismaService,
-    @Inject(MAIL_SERVICE) private readonly mailClient: ClientProxy,
-  ) {}
+export class UsersService{
 
-  /**
-   * @description
-   * Auth login fx
-   */
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auth: AuthService,
+    @Inject(MAIL_SERVICE) private readonly mailClient: ClientProxy,
+  ){}
+  
   async login(login: LoginDto) {
     const user = await this.prisma.user.findFirst({
       where: { username: login.username, available: true },
@@ -59,7 +48,10 @@ export class UsersService {
 
       return result;
     } catch (error) {
-      throw new BadRequestException(JSON.stringify(error));
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new BadRequestException('Error de Prisma: ' + error.message);
+      }
+      throw new InternalServerErrorException();
     }
   }
 

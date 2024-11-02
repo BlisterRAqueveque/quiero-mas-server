@@ -3,11 +3,11 @@ import { AuthModule } from '../auth';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { envs, MAIL_SERVICE } from '../configuration';
-import { PrismaModule } from 'src/prisma-setup/prisma.module';
+import { envs, MAIL_SERVICE       } from '../configuration';
+import { PrismaModule             } from '../prisma-setup/prisma.module';
 
 @Module({
-  imports: [
+  imports: [ PrismaModule,
     forwardRef(() => AuthModule),
     ClientsModule.register([
       {

@@ -1,19 +1,13 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { AuctionService } from './auction.service';
+import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { AuctionService   } from './auction.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
-import { Auth } from '../auth/decorators';
+import { Auth, GetUser, RoleProtected    } from '../auth/decorators';
+import { State            } from '../common/enums/state.enum';
+import { ParseUUIDPipe    } from '@nestjs/common';
+import { Roles } from '../common';
+import { UserRoleGuard } from '../auth/guards/user-role.guard';
+
 
 @Controller('auction')
 export class AuctionController {
@@ -23,54 +17,59 @@ export class AuctionController {
   /* TODO: restringir creación de subastas para usuarios, los usuarios comunes podrán crear subastas pero no de cualquier tipo ( Preguntar a Caro como manejar esto) */
   @Auth()
   @Post()
-  async create(@Body() createAuctionDto: CreateAuctionDto) {
+  async create(@Body() createAuctionDto: CreateAuctionDto, @GetUser('id') organizerId: string) {  /* Extraermos el id del usuario desde el decorador @GetUser, así simplificamos la lógica */
     try {
-      return await this.auctionService.create(createAuctionDto);
+      return await this.auctionService.create(createAuctionDto, organizerId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  // Obtener todas las subastas con paginación
+
+  /* Obtener todas las subastas según su estado, si no es proporcionado el estado devolvemos todas las Auctions. Tambien implementamos paginación */ 
   @Get()
-  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    limit = Math.min(limit, 100); // Evitar que alguien solicite demasiados elementos
-    return this.auctionService.findAll({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('state') state?: State,
+  ) {
+    return this.auctionService.findAll(page, limit, state); /* Llama al servicio para obtener las subastas con la lógica de paginación y filtrado por estado */
   }
 
-  // Obtener una subasta por su ID
+
+  /* Obtener una subasta por su ID */ 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     const auction = await this.auctionService.findOne(id);
-    if (!auction) {
-      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
-    }
     return auction;
   }
 
-  /* TODO: El usuario que creó la subasta podrá actualizarla */
+
+  /* TODO: El usuario que creó la subasta podrá actualizarla */ 
+  @Auth()
   @Patch(':id')
+  @RoleProtected(Roles.SUPERUSER)
+  @UseGuards(UserRoleGuard)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string, 
     @Body() updateAuctionDto: UpdateAuctionDto,
-  ) {
-    try {
-      return await this.auctionService.update(id, updateAuctionDto);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+    @GetUser('id') userId: string,
+    @GetUser('role') userRole: Roles) {
+    return await this.auctionService.update(id, updateAuctionDto, userId, userRole)
   }
 
-  /* TODO: El usuario que creó la subasta podrá eliminarla, tambien el Superusuario y el Admin */
+  /* TODO: El usuario que creó la subasta podrá eliminarla, también el Superusuario y el Admin */
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    try {
-      return await this.auctionService.remove(id);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+  @Auth()
+  @RoleProtected(Roles.AUCTIONEER, Roles.SUPERUSER)
+  @UseGuards(UserRoleGuard)
+  async remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @GetUser('id') userId: string,
+    @GetUser('role') userRole: Roles){
+   
+    return await this.auctionService.remove(id, userId, userRole);
   }
+  
 }
+

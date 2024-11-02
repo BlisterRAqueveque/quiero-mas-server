@@ -1,9 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsString, IsBoolean, IsOptional, IsDate } from 'class-validator';
+import { IsString, IsOptional, IsDate, IsEnum } from 'class-validator';
+import { State } from '../../common/enums/state.enum';
 
 export class CreateAuctionDto {
+  
   @IsString()
-  organizerId: string;
+  @IsOptional()
+  organizerId?: string
 
   @IsString()
   description: string;
@@ -29,9 +32,9 @@ export class CreateAuctionDto {
   @IsString()
   photo: string;
 
-  @IsBoolean()
+  @IsEnum(State)
   @IsOptional()
-  available?: boolean;
+  state?: State;
 
   @IsDate()
   @Type(() => Date)

@@ -1,15 +1,12 @@
-import {
-  IsString,
-  IsOptional,
-  IsArray,
-  IsDate,
-  IsNumber,
-} from 'class-validator';
+import { IsString, IsOptional, IsArray, IsDate, IsNumber, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateLotDto {
+
+  
   @IsString()
-  auctionId: string;
+  @IsOptional()
+  auctionId?: string;
 
   @IsString()
   description: string;
@@ -45,4 +42,5 @@ export class CreateLotDto {
   @Type(() => Date)
   @IsOptional()
   deletedAt?: Date;
+
 }
