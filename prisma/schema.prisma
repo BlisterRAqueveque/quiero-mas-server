@@ -67,6 +67,7 @@ model Lot {
   videos          String[]    // Videos del lote
   createdAt       DateTime    @default(now())
   deletedAt       DateTime?
+  available       Boolean    @default(true)
 }
 
 model Bid {

@@ -98,32 +98,25 @@ export class AuctionService{
   /* Actualizar una subasta*/ 
   async update(id: string, updateAuctionDto: UpdateAuctionDto, userId: string, userRole: Roles) {
     try {
-      // Buscar la subasta existente
-      const existingAuction = await this.prisma.auction.findUnique({
+      const existingAuction = await this.prisma.auction.findUnique({                        /* Busca la subasta existente */
         where: { id },
       });
-      
-      // Si no se encuentra, lanzar una excepción
-      if (!existingAuction) {
+      if (!existingAuction) {                                                               /*Si no se encuentra, lanzar una excepción  */
         throw new NotFoundException(`Auction with id ${id} not found`);
       }
-       // Verificar si el usuario tiene permisos para actualizar (es el creador o tiene rol de SUPERUSER)
-       if (existingAuction.organizerId !== userId && userRole !== Roles.SUPERUSER) {
+       if (existingAuction.organizerId !== userId && userRole !== Roles.SUPERUSER) {        /* Verifica si el usuario tiene permisos para actualizar (es el creador o tiene rol de SUPERUSER) */
         throw new ForbiddenException('You do not have permission to update this auction');
       }
-      
-      // Realizar la actualización
-      return await this.prisma.auction.update({
+
+      return await this.prisma.auction.update({   /* Realiza la actualización */
         where: { id },
         data: updateAuctionDto,
       });
       
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof ForbiddenException) {
-        throw error; // Mantener el error 404 o 403 
+        throw error;
       }
-      
-      // Para otros errores, lanzar una excepción genérica
       throw new HttpException(
         `Error updating auction: ${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -137,37 +130,29 @@ export class AuctionService{
         const existingAuction = await this.prisma.auction.findUnique({
           where: { id },
       });
-      
-      // Si no se encuentra, lanzar una excepción
-      if (!existingAuction) {
+      if (!existingAuction) {                       /* Si no se encuentra, lanzar una excepción  */
         throw new NotFoundException(`Auction with id ${id} not found`);
       }
 
-          // Verificar si la subasta ya fue eliminada
-          if (!existingAuction.available) {
-            throw new BadRequestException(`Auction with id ${id} has already been deleted`);
-          }
+      if (!existingAuction.available) {         /* Verificar si la subasta ya fue eliminada */
+        throw new BadRequestException(`Auction with id ${id} has already been deleted`);
+      }
 
-      // Verificar si el usuario tiene permisos para eliminar (es el creador o es SUPERUSER)
-      if (existingAuction.organizerId !== userId && userRole !== Roles.SUPERUSER) {
+      if (existingAuction.organizerId !== userId && userRole !== Roles.SUPERUSER) {           /*  Verifica si el usuario tiene permisos para eliminar (es el creador o es SUPERUSER)  */
         throw new ForbiddenException('You do not have permission to delete this auction');
       }
 
-      // Realizar el soft delete actualizando los campos `available` y `deletedAt`
-      return await this.prisma.auction.update({
+      return await this.prisma.auction.update({       /* Realizar el soft delete actualizando los campos `available` y `deletedAt` */
         where: { id },
         data: {
           available: false,
           deletedAt: new Date(),
         },
       });
-      } catch (error) {      
-        
+      } catch (error) {       
         if (error instanceof NotFoundException || error instanceof ForbiddenException) {
-        throw error; // Mantener el error 404 o 403
+        throw error; 
       }
-      
-      // Para otros errores, lanzar una excepción genérica
       throw new HttpException(
         `Error updating auction: ${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,

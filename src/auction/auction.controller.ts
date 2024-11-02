@@ -1,12 +1,12 @@
-import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, NotFoundException, UseGuards } from '@nestjs/common';
+import {  Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuctionService   } from './auction.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
 import { Auth, GetUser, RoleProtected    } from '../auth/decorators';
 import { State            } from '../common/enums/state.enum';
 import { ParseUUIDPipe    } from '@nestjs/common';
-import { Roles } from 'src/common';
-import { UserRoleGuard } from 'src/auth/guards/user-role.guard';
+import { Roles } from '../common';
+import { UserRoleGuard } from '../auth/guards/user-role.guard';
 
 
 @Controller('auction')

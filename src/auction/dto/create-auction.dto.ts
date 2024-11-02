@@ -4,6 +4,9 @@ import { State } from '../../common/enums/state.enum';
 
 export class CreateAuctionDto {
   
+  @IsString()
+  @IsOptional()
+  organizerId?: string
 
   @IsString()
   description: string;
