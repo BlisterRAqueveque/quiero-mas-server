@@ -18,11 +18,7 @@ export class AuctionController {
   @Auth()
   @Post()
   async create(@Body() createAuctionDto: CreateAuctionDto, @GetUser('id') organizerId: string) {  /* Extraermos el id del usuario desde el decorador @GetUser, así simplificamos la lógica */
-    try {
       return await this.auctionService.create(createAuctionDto, organizerId);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
   }
 
 

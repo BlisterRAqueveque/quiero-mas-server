@@ -3,7 +3,7 @@ import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
 import { PrismaService    } from '../prisma-setup/prisma.service';
 import { State            } from '../common/enums/state.enum';
-import { Roles } from 'src/common';
+import { Roles            } from '../common';
 import { BadRequestException } from '@nestjs/common';
 
 @Injectable()

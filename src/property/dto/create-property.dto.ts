@@ -45,7 +45,8 @@ export class CreatePropertyDto {
   contact: string;
 
   @IsString()
-  userId: string;
+  @IsOptional()
+  userId?: string;
 
   @IsEnum(PropertyType)
   propertyType: PropertyType;

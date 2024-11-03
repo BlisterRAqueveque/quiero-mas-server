@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, UseGuards  } from '@nestjs/common';
-import { GetUser, Auth, RoleProtected   } from '../auth/decorators';
-import { UserRoleGuard                  } from '../auth/guards/user-role.guard';
+import { GetUser, Auth                  } from '../auth/decorators';
 import { LotService                     } from './lot.service';
 import { CreateLotDto                   } from './dto/create-lot.dto';
 import { UpdateLotDto                   } from './dto/update-lot.dto';
