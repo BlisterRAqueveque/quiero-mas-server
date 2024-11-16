@@ -2,9 +2,9 @@ import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, ParseUUID
 import { PropertyService                }  from './property.service';
 import { CreatePropertyDto              } from './dto/create-property.dto';
 import { UpdatePropertyDto              } from './dto/update-property.dto';
-import { GetUser, Auth, RoleProtected                   } from '../auth/decorators';
-import { Roles              } from '../common';
-import { UserRoleGuard } from '../auth/guards/user-role.guard';
+import { GetUser, Auth, RoleProtected   } from '../auth/decorators';
+import { Roles                          } from '../common';
+import { UserRoleGuard                  } from '../auth/guards/user-role.guard';
 
 
 @Controller('properties')

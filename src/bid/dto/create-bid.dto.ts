@@ -1,9 +1,10 @@
-import { IsString, IsNumber, IsDate } from 'class-validator';
+import { IsString, IsNumber, IsDate, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateBidDto {
   @IsString()
-  userId: string;
+  @IsOptional()
+  userId?: string;
 
   @IsString()
   lotId: string;
@@ -12,6 +13,7 @@ export class CreateBidDto {
   amount: number;
 
   @IsDate()
+  @IsOptional()
   @Type(() => Date)
-  createdAt: Date;
+  createdAt?: Date;
 }

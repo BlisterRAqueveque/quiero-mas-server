@@ -1,8 +1,7 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { Roles          } from '../common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService  } from '../prisma-setup/prisma.service';
 import { CreateLotDto   } from './dto/create-lot.dto';
-import { UpdateLotDto   } from './dto/update-lot.dto';
+
 
 
 

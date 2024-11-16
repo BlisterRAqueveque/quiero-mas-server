@@ -1,34 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Patch, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { UpdateBidDto } from './dto/update-bid.dto';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { Auth } from '../auth/decorators/auth.decorator';
 
-@Controller('bid')
+@Controller('bids')
+
+
 export class BidController {
   constructor(private readonly bidService: BidService) {}
 
+  @Auth()
   @Post()
-  create(@Body() createBidDto: CreateBidDto) {
-    return this.bidService.create(createBidDto);
+  
+  async createBid(@Body() createBidDto: CreateBidDto, @GetUser('id') userId: string) {
+    return this.bidService.createBid(createBidDto, userId);
   }
 
   @Get()
-  findAll() {
-    return this.bidService.findAll();
+  async findAllBids() {
+    return this.bidService.findAllBids();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bidService.findOne(+id);
+  async findOneBid(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.bidService.findOneBid(id);
   }
 
+  @Auth()
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBidDto: UpdateBidDto) {
-    return this.bidService.update(+id, updateBidDto);
+  async updateBid(@Param('id', new ParseUUIDPipe()) id: string, @Body() updateBidDto: UpdateBidDto) {
+    return this.bidService.updateBid(id, updateBidDto);
   }
 
+  @Auth()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bidService.remove(+id);
+  async removeBid(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.bidService.removeBid(id);
   }
 }

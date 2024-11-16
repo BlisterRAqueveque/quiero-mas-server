@@ -1,9 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, UseGuards  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, ParseUUIDPipe } from '@nestjs/common';
 import { GetUser, Auth                  } from '../auth/decorators';
 import { LotService                     } from './lot.service';
 import { CreateLotDto                   } from './dto/create-lot.dto';
-import { UpdateLotDto                   } from './dto/update-lot.dto';
-import { Roles                          } from '../common';
 
 @Controller('lot')
 export class LotController {
