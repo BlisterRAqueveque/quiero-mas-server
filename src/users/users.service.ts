@@ -51,9 +51,11 @@ export class UsersService{
       if (error instanceof PrismaClientKnownRequestError) {
         throw new BadRequestException('Error de Prisma: ' + error.message);
       }
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(),
+      console.error('Error al crear usuario:', error);
     }
-  }
+    }
+  
 
   async findAll(pagination: PaginationDto) {
     const { page, limit, orderBy } = pagination;

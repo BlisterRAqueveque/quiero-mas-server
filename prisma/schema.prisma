@@ -20,7 +20,7 @@ model User {
   username    String     
   email       String     @unique
   password    String
-  role        Roles       @default(USER)
+  roles        Roles       @default(USER)
   auctions    Auction[]     // Un usuario puede tener varias subastas
   properties  Property[]   // Un usuario puede publicar varias propiedades
   bids        Bid[]       // Un usuario puede hacer varias pujas(ofertas en un lote)

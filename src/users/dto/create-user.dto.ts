@@ -7,8 +7,9 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Roles } from '../../common/enums/roles.enum';
+
 import { Type } from 'class-transformer';
+import { Roles } from '@prisma/client';
 
 export class CreateUserDto {
   @IsString()

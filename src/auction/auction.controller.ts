@@ -43,9 +43,9 @@ export class AuctionController {
 
   /* TODO: El usuario que creó la subasta podrá actualizarla */ 
   @Auth()
-  @Patch(':id')
   @RoleProtected(Roles.SUPERUSER)
   @UseGuards(UserRoleGuard)
+  @Patch(':id')
   async update(
     @Param('id', new ParseUUIDPipe()) id: string, 
     @Body() updateAuctionDto: UpdateAuctionDto,
