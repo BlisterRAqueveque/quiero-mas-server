@@ -1,8 +1,7 @@
 import { IsString, IsEnum, IsOptional, IsBoolean, IsNumber, IsArray, IsDate } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { PropertyType } from '../../common/enums/property.enum';
 import { Operation } from '../../common/enums/operation.enum';
-
 export class CreatePropertyDto {
   @IsString()
   address: string;
@@ -49,6 +48,7 @@ export class CreatePropertyDto {
   userId?: string;
 
   @IsEnum(PropertyType)
+  @Transform(({ value }) => value?.toUpperCase())
   propertyType: PropertyType;
 
   @IsEnum(Operation)

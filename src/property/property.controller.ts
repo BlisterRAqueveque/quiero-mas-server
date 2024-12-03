@@ -11,7 +11,6 @@ import { UserRoleGuard                  } from '../auth/guards/user-role.guard';
 export class PropertyController {
     constructor(private propertyService: PropertyService) {}
 
-
     @Auth()
     @Post()
     async create(@Body() createPropertyDto: CreatePropertyDto, @GetUser('id') userId: string) {

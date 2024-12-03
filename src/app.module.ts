@@ -53,6 +53,14 @@ export class AppModule implements NestModule {
           path: '/auth/verificar',
           method: RequestMethod.GET,  
         },
+        {
+          path: '/properties',
+          method: RequestMethod.GET,  
+        },
+        {
+          path: '/properties/:id',
+          method: RequestMethod.GET,
+        },
       )
       .forRoutes('');
   }
