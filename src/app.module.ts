@@ -61,6 +61,30 @@ export class AppModule implements NestModule {
           path: '/properties/:id',
           method: RequestMethod.GET,
         },
+        {
+          path: '/auction',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/auction/:id',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/bids',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/bids/:id',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/lot',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/lot/:id',
+          method: RequestMethod.GET,
+        },
       )
       .forRoutes('');
   }

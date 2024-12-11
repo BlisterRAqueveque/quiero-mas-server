@@ -4,13 +4,10 @@ import { CreateBidDto } from './dto/create-bid.dto';
 import { UpdateBidDto } from './dto/update-bid.dto';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
-import { RoleProtected } from 'src/auth/decorators';
 import { UserRoleGuard } from 'src/auth/guards/user-role.guard';
-import { Roles } from '@prisma/client';
 
 
 @Controller('bids')
-
 
 export class BidController {
   constructor(private readonly bidService: BidService) {}
@@ -31,21 +28,22 @@ export class BidController {
     return this.bidService.findOneBid(id);
   }
 
+  /*
   @Auth()
-  @RoleProtected(Roles.ADMIN)
-  @UseGuards(UserRoleGuard)
   @Patch(':id')
   async updateBid(
     @Param('id', new ParseUUIDPipe()) id: string, 
     @Body() updateBidDto: UpdateBidDto,
-    @GetUser('id') userId: string,
-    @GetUser('role') userRole: Roles) {
-    return await this.bidService.updateBid(id, updateBidDto, userId, userRole);
-  }
+    @GetUser('id') userId: string) {
+    return await this.bidService.updateBid(id, updateBidDto, userId );
+  } */
 
+    /*
   @Auth()
   @Delete(':id')
-  async removeBid(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.bidService.removeBid(id);
-  }
+  async removeBid(@Param('id', new ParseUUIDPipe()) id: string,
+  @GetUser('id') userId: string,
+) {
+    return this.bidService.removeBid(id, userId);
+  }*/
 }

@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsDate, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsDate, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateBidDto {
@@ -9,7 +9,8 @@ export class CreateBidDto {
   @IsString()
   lotId: string;
 
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces:2 })
+  @Min(0)
   amount: number;
 
   @IsDate()
