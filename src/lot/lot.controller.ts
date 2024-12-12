@@ -20,7 +20,7 @@ export class LotController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
-    return this.lotService.findAll(page, limit);
+    return await this.lotService.findAll(page, limit);
   }
 
   /* Obtener un lote por su ID */
@@ -33,7 +33,7 @@ export class LotController {
   /* Actualizar un lote */
   /*@Auth()
   @Patch(':id')
-  //@RoleProtected(Roles.SUPERUSER)
+  //@RoleProtected(Roles.SUPERUSER, ROLES.USER, ROLES.AUCTIONEER)
   //@UseGuards(UserRoleGuard)
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,

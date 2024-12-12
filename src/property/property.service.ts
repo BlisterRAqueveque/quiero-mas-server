@@ -57,7 +57,7 @@ export class PropertyService {
         throw new NotFoundException();
       }
 
-      if (existingProperty.userId !== userId && userRole !== Roles.SUPERUSER) {
+      if (existingProperty.userId !== userId && userRole !== Roles.SUPERUSER || Roles.USER) {
         throw new ForbiddenException();
       }
 

@@ -2,17 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService  } from '../prisma-setup/prisma.service';
 import { CreateLotDto   } from './dto/create-lot.dto';
 
-
-
-
 @Injectable()
 export class LotService {
   constructor(private readonly prisma: PrismaService) {}
 
   /* Crear un nuevo lote */
   async create(createLotDto: CreateLotDto, organizerId: string) {
-     // Verifica que el usuario autenticado sea el creador de la subasta
-     const auction = await this.prisma.auction.findUnique({
+     const auction = await this.prisma.auction.findUnique({            /* Verifica que el usuario autenticado sea el creador de la subasta */
       where: { id: createLotDto.auctionId },
   });
 
@@ -24,8 +20,7 @@ export class LotService {
       throw new Error("No tienes permiso para agregar lotes a esta subasta");
   }
 
-  // Si la verificación pasa, crea el lote
-  return this.prisma.lot.create({
+  return this.prisma.lot.create({               /*   Si la verificación pasa, crea el lote */
       data: {
           ...createLotDto,
           createdAt: createLotDto.createdAt || new Date(),
@@ -96,7 +91,7 @@ export class LotService {
       if (!existingLot) {
         throw new NotFoundException(`Lot with id ${id} not found`);
       }
-      if (existingLot.organizerId !== userId && userRole !== Roles.SUPERUSER) {
+      if (existingLot.organizerId !== userId && userRole !== Roles.SUPERUSER || Roles.AUCTIONEER || Roles.USER ) {
         throw new ForbiddenException('You do not have permission to update this lot');
       }
 

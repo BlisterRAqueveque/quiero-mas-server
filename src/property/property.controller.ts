@@ -14,7 +14,7 @@ export class PropertyController {
     @Auth()
     @Post()
     async create(@Body() createPropertyDto: CreatePropertyDto, @GetUser('id') userId: string) {
-        return this.propertyService.create(createPropertyDto, userId);
+        return  await this.propertyService.create(createPropertyDto, userId);
     }
 
     @Get()
@@ -22,12 +22,12 @@ export class PropertyController {
         @Query('page') page = 1,
         @Query('limit') limit = 10,
     ){
-        return this.propertyService.findAll(page, limit);
+        return await this.propertyService.findAll(page, limit);
     }
 
     @Get(':id')
     async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.propertyService.findOne(id);
+        return await this.propertyService.findOne(id);
     }
 
     @Auth()
@@ -40,10 +40,10 @@ export class PropertyController {
         @GetUser('id') userId: string,
         @GetUser('role') userRole: Roles
     ) {
-        return this.propertyService.update(id, updatePropertyDto, userId, userRole);
+        return await this.propertyService.update(id, updatePropertyDto, userId, userRole);
     }
 
-        /* TODO: El usuario que creó la Property podrá eliminarla, también el Superusuario y el Admin */
+        /* TODO: El usuario que creó la Property podrá eliminarla, también el Superusuario */
     @Auth()
     @RoleProtected(Roles.USER, Roles.SUPERUSER)
     @UseGuards(UserRoleGuard)
@@ -53,7 +53,7 @@ export class PropertyController {
       @GetUser('id') userId: string,
       @GetUser('role') userRole: Roles
     ) {
-        return this.propertyService.remove(id, userId, userRole);
+        return await this.propertyService.remove(id, userId, userRole);
     }
 
 }

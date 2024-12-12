@@ -1,10 +1,10 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException       } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
 import { PrismaService    } from '../prisma-setup/prisma.service';
-import { State            } from '../common/enums/state.enum';
 import { Roles            } from '../common';
 import { BadRequestException } from '@nestjs/common';
+import { State } from '@prisma/client';
 
 @Injectable()
 export class AuctionService{
@@ -28,10 +28,19 @@ export class AuctionService{
       const adjustedLimit = Math.min(limit, maxLimit);
   
       try {
-        const whereClause =  { 
+        /*const whereClause =  { 
           available: true,
-          ...(state? { state } : {}),   /* Construimos el filtro de búsqueda, Se filtra por state sólo si éste es proporcionado, sino devuelve todas las Auctions sin importar su estado */
-        };
+          ...(state? { state } : {}),*/  /* Construimos el filtro de búsqueda, Se filtra por state sólo si éste es proporcionado, sino devuelve todas las Auctions sin importar su estado */
+        
+          const whereClause: any = {
+            available: true,
+          };
+      
+          // Agrega la condición del estado si está presente
+          if (state) {
+            whereClause.state = state;
+          }
+        
         const [data, total] = await Promise.all([     /* Promise.all ejecuta las consultas findMany y count en paralelo */
           this.prisma.auction.findMany({
             skip,
@@ -57,10 +66,7 @@ export class AuctionService{
         HttpStatus.BAD_REQUEST,
       );
     }
-    throw new HttpException(
-      'Error retrieving auctions, please try again later.',
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+    throw new InternalServerErrorException();
   }
 }
 
@@ -75,37 +81,26 @@ export class AuctionService{
         lots: true },               /* Seleccionamos el campo ID de los LOTES de la Auction, ACÁ manejamos los campos que queremos que devuelva de cada lote */
       });
 
-      if (!auction) {
+      if (!auction || !auction.available) {
         throw new HttpException('Auction not found', HttpStatus.NOT_FOUND); /* Verificamos si no existe la subasta */
       }
       return auction;
     } catch (error) {
-      
-      if (error.name === 'PrismaClientKnownRequestError') {   /* Si es un error específico de Prisma o de la base de datos */
-        throw new HttpException(
-          `Database error: ${error.message}`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      throw new HttpException(
-        'An error occurred while retrieving the auction',     /* Otro tipo de error no específico */
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new InternalServerErrorException()
     }
   }
 
   /* Actualizar una subasta*/ 
-  async update(id: string, updateAuctionDto: UpdateAuctionDto, userId: string, userRole: Roles) {
+  async update(id: string, updateAuctionDto: UpdateAuctionDto, userId: string) {
     try {
       const existingAuction = await this.prisma.auction.findUnique({                        /* Busca la subasta existente */
         where: { id },
       });
       if (!existingAuction) {                                                               /*Si no se encuentra, lanzar una excepción  */
-        throw new NotFoundException(`Auction with id ${id} not found`);
+        throw new NotFoundException();
       }
-       if (existingAuction.organizerId !== userId && userRole !== Roles.SUPERUSER) {        /* Verifica si el usuario tiene permisos para actualizar (es el creador o tiene rol de SUPERUSER) */
-        throw new ForbiddenException('You do not have permission to update this auction');
+       if (existingAuction.organizerId !== userId ) {        /* Verifica si el usuario tiene permisos para actualizar (es el creador o tiene rol de SUPERUSER) */
+        throw new ForbiddenException();
       }
 
       return await this.prisma.auction.update({   /* Realiza la actualización */
@@ -117,10 +112,7 @@ export class AuctionService{
       if (error instanceof NotFoundException || error instanceof ForbiddenException) {
         throw error;
       }
-      throw new HttpException(
-        `Error updating auction: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new InternalServerErrorException();
     }
   }
 
@@ -131,15 +123,15 @@ export class AuctionService{
           where: { id },
       });
       if (!existingAuction) {                       /* Si no se encuentra, lanzar una excepción  */
-        throw new NotFoundException(`Auction with id ${id} not found`);
+        throw new NotFoundException();
       }
 
       if (!existingAuction.available) {         /* Verificar si la subasta ya fue eliminada */
-        throw new BadRequestException(`Auction with id ${id} has already been deleted`);
+        throw new BadRequestException();
       }
 
       if (existingAuction.organizerId !== userId && userRole !== Roles.SUPERUSER) {           /*  Verifica si el usuario tiene permisos para eliminar (es el creador o es SUPERUSER)  */
-        throw new ForbiddenException('You do not have permission to delete this auction');
+        throw new ForbiddenException();
       }
 
       return await this.prisma.auction.update({       /* Realizar el soft delete actualizando los campos `available` y `deletedAt` */
@@ -147,16 +139,14 @@ export class AuctionService{
         data: {
           available: false,
           deletedAt: new Date(),
+          state: "CLOSED"
         },
       });
       } catch (error) {       
         if (error instanceof NotFoundException || error instanceof ForbiddenException) {
         throw error; 
       }
-      throw new HttpException(
-        `Error updating auction: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new InternalServerErrorException()
     }
   }
 }

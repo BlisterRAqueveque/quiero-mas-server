@@ -1,6 +1,6 @@
+import { State } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsString, IsOptional, IsDate, IsEnum } from 'class-validator';
-import { State } from '../../common/enums/state.enum';
 
 export class CreateAuctionDto {
   
@@ -45,6 +45,7 @@ export class CreateAuctionDto {
   @Type(() => Date)
   @IsOptional()
   deletedAt?: Date;
+  
 
 }
 

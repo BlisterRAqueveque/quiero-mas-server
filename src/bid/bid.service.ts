@@ -1,7 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma-setup/prisma.service';
 import { CreateBidDto } from './dto/create-bid.dto';
-import { UpdateBidDto } from './dto/update-bid.dto';
 import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
@@ -27,7 +26,7 @@ export class BidService {
       });
 
       if (!lot) {
-        throw new NotFoundException("Lote no encontrado");
+        throw new NotFoundException();
       }
 
       const currentPrice = new Decimal(lot.startingPrice);
@@ -57,8 +56,6 @@ export class BidService {
       throw new InternalServerErrorException()
     }
   }
-
-
   async findAllBids() {
     try {
       return this.prisma.bid.findMany();
@@ -107,28 +104,29 @@ export class BidService {
     }
   }*/
 
-    /*
+    /* Preguntar a Caro si una puja por un lote se puede eliminar */
+
+    
   async removeBid(id: string, userId: string) {
-    try {*/
-      /* Verificar si la puja existe */
-     /* const existingBid = await this.prisma.bid.findUnique({
+    try {
+   
+      const existingBid = await this.prisma.bid.findUnique({     /* Verificar si la puja existe */
         where: { id },
         select: { userId: true },
       });
 
       if (!existingBid) {
-        throw new NotFoundException('Puja no encontrada');
-      }*/
+        throw new NotFoundException();
+      }
 
-      /* Validar permisos*/
-     /* if (existingBid.userId !== userId) {
+      if (existingBid.userId !== userId) {    /* Validar permisos*/ 
         throw new ForbiddenException();
       }
 
       return await this.prisma.bid.delete({ where: { id } });
 
     } catch (error) {
-      throw new InternalServerErrorException('Error al eliminar la puja');
+      throw new InternalServerErrorException();
     }
-  }*/
+  }
 }
