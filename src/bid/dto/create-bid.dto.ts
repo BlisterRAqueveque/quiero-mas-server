@@ -17,4 +17,9 @@ export class CreateBidDto {
   @IsOptional()
   @Type(() => Date)
   createdAt?: Date;
+
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  deletedAt?: Date;
 }

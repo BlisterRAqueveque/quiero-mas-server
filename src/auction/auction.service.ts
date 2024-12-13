@@ -99,7 +99,7 @@ export class AuctionService{
       if (!existingAuction) {                                                               /*Si no se encuentra, lanzar una excepción  */
         throw new NotFoundException();
       }
-       if (existingAuction.organizerId !== userId ) {        /* Verifica si el usuario tiene permisos para actualizar (es el creador o tiene rol de SUPERUSER) */
+       if (existingAuction.organizerId !== userId ) {        /* Verifica si el usuario tiene permisos para actualizar (es el creador) */
         throw new ForbiddenException();
       }
 
@@ -134,7 +134,7 @@ export class AuctionService{
         throw new ForbiddenException();
       }
 
-      return await this.prisma.auction.update({       /* Realizar el soft delete actualizando los campos `available` y `deletedAt` */
+      return await this.prisma.auction.update({       /* Soft delete actualiza los campos `available` y `deletedAt` */
         where: { id },
         data: {
           available: false,

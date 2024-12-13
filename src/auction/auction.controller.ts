@@ -50,10 +50,10 @@ export class AuctionController {
     return await this.auctionService.update(id, updateAuctionDto, userId)
   }
 
-  /* TODO: El usuario que creó la subasta podrá eliminarla, también el Superusuario y el Admin */
+  /* El usuario que creó la subasta podrá eliminarla, también el Superusuario*/
   @Delete(':id')
   @Auth()
-  @RoleProtected(Roles.AUCTIONEER, Roles.SUPERUSER)
+  @RoleProtected(Roles.SUPERUSER)
   @UseGuards(UserRoleGuard)
   async remove(
     @Param('id', new ParseUUIDPipe()) id: string,

@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { PrismaService } from '../prisma-setup/prisma.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Roles } from 'src/common';
 
 @Injectable()
 export class BidService {
@@ -56,9 +57,17 @@ export class BidService {
       throw new InternalServerErrorException()
     }
   }
+
+  
   async findAllBids() {
+   
     try {
-      return this.prisma.bid.findMany();
+
+      const whereClause: any = {
+        available: true,
+      };
+
+      return await this.prisma.bid.findMany();
     } catch (error) {
       throw new InternalServerErrorException()
     }
@@ -66,9 +75,14 @@ export class BidService {
 
   async findOneBid(id: string) {
     try {
-      const bid = await this.prisma.bid.findUnique({ where: { id } });
 
-      if (!bid) {
+      const bid = await this.prisma.bid.findUnique({ 
+        where: { id },
+      include: { user: {
+        select: {username: true}      /* Si queremos que regrese más campos del usuario que realizó la Bid, los agregamos acá */
+      }} });
+
+      if (!bid || !bid.available) {
         throw new NotFoundException()
       }
       return bid;
@@ -105,25 +119,34 @@ export class BidService {
   }*/
 
     /* Preguntar a Caro si una puja por un lote se puede eliminar */
+    /* TODO: si una puja se elimina, eliminar la puja de la Auction y actualizar su valor */
 
     
-  async removeBid(id: string, userId: string) {
+  async removeBid(id: string, userId: string, userRole: Roles) {
     try {
    
       const existingBid = await this.prisma.bid.findUnique({     /* Verificar si la puja existe */
-        where: { id },
-        select: { userId: true },
+        where: { id }
       });
 
       if (!existingBid) {
         throw new NotFoundException();
       }
 
-      if (existingBid.userId !== userId) {    /* Validar permisos*/ 
+      if (!existingBid.available) {
+        throw new BadRequestException();
+      }
+
+      if (existingBid.userId !== userId && userRole !== Roles.SUPERUSER || Roles.ADMIN) {    /* Validar permisos*/ 
         throw new ForbiddenException();
       }
 
-      return await this.prisma.bid.delete({ where: { id } });
+      return await this.prisma.bid.update({ 
+        where: { id },
+        data: {
+          available: false,
+          deletedAt: new Date()
+        } });
 
     } catch (error) {
       throw new InternalServerErrorException();

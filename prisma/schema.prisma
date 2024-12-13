@@ -78,6 +78,8 @@ model Bid {
   lot       Lot       @relation(fields: [lotId], references: [id])
   amount    Float     // Monto de la puja
   createdAt DateTime  @default(now())
+  deletedAt DateTime?
+  available Boolean   @default(true)
   //TODO como manejar si un usuario hace una puja y luego se arrepiente
 }
 

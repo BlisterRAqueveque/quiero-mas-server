@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Param, Query, ParseUUIDPipe } from '@nestjs/common';
-import { GetUser, Auth                  } from '../auth/decorators';
+import { Controller, Get, Post, Body, Param, Query, ParseUUIDPipe, Delete, UseGuards } from '@nestjs/common';
+import { GetUser, Auth, RoleProtected                  } from '../auth/decorators';
 import { LotService                     } from './lot.service';
 import { CreateLotDto                   } from './dto/create-lot.dto';
+import { Roles } from '@prisma/client';
+import { UserRoleGuard } from '../auth/guards/user-role.guard';
 
 @Controller('lot')
 export class LotController {
@@ -44,14 +46,14 @@ export class LotController {
   }*/
 
   /* Eliminar un lote */
-  /*@Delete(':id')
+  @Delete(':id')
   @Auth()
-  //@RoleProtected(Roles.AUCTIONEER, Roles.SUPERUSER)
-  //@UseGuards(UserRoleGuard)
+  @RoleProtected(Roles.ADMIN, Roles.SUPERUSER)
+  @UseGuards(UserRoleGuard)
   async remove(
     @Param('id', new ParseUUIDPipe()) id: string,
     @GetUser('id') userId: string,
     @GetUser('role') userRole: Roles) {
     return await this.lotService.remove(id, userId, userRole);
-  }*/
+  }
 }
