@@ -39,7 +39,7 @@ export class BidController {
 
     /* Preguntar a Caro si la bid se puede eliminar */
   @Auth()
-  @RoleProtected(Roles.SUPERUSER, Roles.ADMIN)
+  @RoleProtected(Roles.SUPERUSER)
   @UseGuards(UserRoleGuard)
   @Delete(':id')
   async removeBid(@Param('id', new ParseUUIDPipe()) id: string,

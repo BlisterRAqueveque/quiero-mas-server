@@ -58,6 +58,7 @@ model Lot {
   auction         Auction     @relation(fields: [auctionId], references: [id])
   description     String
   startingPrice   Float       // Precio inicial de la puja
+  currentPrice    Float       // Precio más alto de la puja
   exhibitionPlace String
   exhibitionTime  DateTime
   bids            Bid[]       // Varias pujas por lote

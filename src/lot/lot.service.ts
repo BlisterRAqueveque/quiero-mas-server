@@ -16,7 +16,7 @@ export class LotService {
       });
 
       if (!auction) {
-        throw new NotFoundException();;
+        throw new NotFoundException();
       }
 
       if (auction.organizerId !== organizerId) {
@@ -28,6 +28,7 @@ export class LotService {
           ...createLotDto,
           createdAt: createLotDto.createdAt || new Date(),
           auctionId: createLotDto.auctionId,
+          currentPrice: createLotDto.startingPrice,
         },
       });
     } catch (error) {
@@ -83,7 +84,16 @@ export class LotService {
     try {
       const lot = await this.prisma.lot.findUnique({
         where: { id },
-        include: { auction: true, bids: true, winner: true },    /* Actualmente devuelve todo el objeto de la Auction a la cual pertenece */
+        include: { 
+          auction: true, 
+          bids : {
+            select: {
+              userId: true,
+              amount: true,
+              createdAt: true,
+            }
+          }, 
+          winner: true },    /* Actualmente devuelve todo el objeto de la Auction a la cual pertenece */
       });
 
       if (!lot || !lot.available) {

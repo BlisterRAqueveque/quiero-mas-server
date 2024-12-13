@@ -31,7 +31,7 @@ export class PropertyController {
     }
 
     @Auth()
-    @RoleProtected(Roles.USER, Roles.SUPERUSER)
+    @RoleProtected(Roles.SUPERUSER)
     @UseGuards(UserRoleGuard)
     @Patch(':id')
     async update(
@@ -43,9 +43,9 @@ export class PropertyController {
         return await this.propertyService.update(id, updatePropertyDto, userId, userRole);
     }
 
-        /* TODO: El usuario que creó la Property podrá eliminarla, también el Superusuario */
+        /* El usuario que creó la Property podrá eliminarla, también el Superusuario y ADMIN */
     @Auth()
-    @RoleProtected(Roles.USER, Roles.SUPERUSER)
+    @RoleProtected(Roles.SUPERUSER, Roles.ADMIN)
     @UseGuards(UserRoleGuard)
     @Delete(':id')
     async remove(

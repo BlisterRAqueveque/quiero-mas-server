@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsDate, IsNumber, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsDate, IsNumber, IsBoolean, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateLotDto {
@@ -12,7 +12,13 @@ export class CreateLotDto {
   description: string;
 
   @IsNumber()
+  @IsPositive()
   startingPrice: number;
+
+  @IsNumber()
+  @IsOptional()
+  @IsPositive()
+  currentPrice?: number;
 
   @IsString()
   exhibitionPlace: string;

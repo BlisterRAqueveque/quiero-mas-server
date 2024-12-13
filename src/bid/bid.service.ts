@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { PrismaService } from '../prisma-setup/prisma.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { Decimal } from '@prisma/client/runtime/library';
-import { Roles } from 'src/common';
+import { Roles } from '../common';
 
 @Injectable()
 export class BidService {
@@ -15,22 +15,26 @@ export class BidService {
 
     try {
 
+      const lot = await this.prisma.lot.findUnique({    /*Verificar si el lote existe*/
+        where: { id: lotId },
+        select: { 
+          startingPrice: true,
+          currentPrice: true,
+          available: true,
+         }
+      });
+
+      if (!lot || !lot.available) {
+        throw new NotFoundException();
+      }
+
       /* Valida que el monto ingresado por el usuario tiene un formato correcto */
       const isValidAmount = /^(\d+)(\.\d{1,2})?$/.test(amount.toString());
       if (!isValidAmount) {
         throw new BadRequestException();
       }
 
-      const lot = await this.prisma.lot.findUnique({    /*Verificar si el lote existe*/
-        where: { id: lotId },
-        select: { startingPrice: true }
-      });
-
-      if (!lot) {
-        throw new NotFoundException();
-      }
-
-      const currentPrice = new Decimal(lot.startingPrice);
+      const currentPrice = new Decimal(lot.currentPrice);
       const bidAmount = new Decimal(amount);
 
       if (bidAmount.lte(currentPrice)) {
@@ -49,18 +53,22 @@ export class BidService {
       /* Actualizar el precio actual del lote con el nuevo precio de la puja */
       await this.prisma.lot.update({
         where: { id: lotId },
-        data: { startingPrice: bidAmount.toNumber() },
+        data: { currentPrice: bidAmount.toNumber() },
       });
 
       return newBid;
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
       throw new InternalServerErrorException()
     }
   }
 
-  
   async findAllBids() {
-   
     try {
 
       const whereClause: any = {
@@ -87,6 +95,11 @@ export class BidService {
       }
       return bid;
     } catch (error) {
+      if (
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
       throw new InternalServerErrorException()
     }
   }
@@ -137,7 +150,7 @@ export class BidService {
         throw new BadRequestException();
       }
 
-      if (existingBid.userId !== userId && userRole !== Roles.SUPERUSER || Roles.ADMIN) {    /* Validar permisos*/ 
+      if (existingBid.userId !== userId && userRole !== Roles.SUPERUSER) {    /* Validar permisos*/ 
         throw new ForbiddenException();
       }
 
@@ -149,6 +162,13 @@ export class BidService {
         } });
 
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
       throw new InternalServerErrorException();
     }
   }
