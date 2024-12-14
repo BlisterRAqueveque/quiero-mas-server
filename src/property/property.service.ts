@@ -112,7 +112,7 @@ export class PropertyService {
         },
       });
 
-      if (!property) throw new NotFoundException();
+      if (!property || !property.available) throw new NotFoundException();
 
       return property;
 
