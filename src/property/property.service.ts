@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma-setup/prisma.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
@@ -50,14 +50,17 @@ export class PropertyService {
     try {
       const existingProperty = await this.prisma.property.findUnique({
         where: { id },
-        select: { userId: true },
       });
 
       if (!existingProperty) {
         throw new NotFoundException();
       }
 
-      if (existingProperty.userId !== userId && userRole !== Roles.SUPERUSER || Roles.USER) {
+      if (!existingProperty.available) {
+        throw new BadRequestException();
+      }
+
+      if (existingProperty.userId !== userId && userRole !== Roles.SUPERUSER && userRole !== Roles.ADMIN) {
         throw new ForbiddenException();
       }
 
